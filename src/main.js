@@ -9,7 +9,7 @@ import '@/styles/index.less'
 import zhCN from 'vee-validate/dist/locale/zh_CN'
 import VeeValidate, { Validator } from 'vee-validate'
 Vue.use(VeeValidate, {
-  event: 'change'
+  event: ''
 })
 Validator.localize('zh_CN', zhCN)
 Vue.use(Vant)
