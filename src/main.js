@@ -9,12 +9,19 @@ import '@/styles/index.less'
 import zhCN from 'vee-validate/dist/locale/zh_CN'
 import VeeValidate, { Validator } from 'vee-validate'
 Vue.use(VeeValidate, {
-  event: ''
+  events: ''
 })
 Validator.localize('zh_CN', zhCN)
 Vue.use(Vant)
 Vue.config.productionTip = false
-
+// 全局缓冲器
+Vue.prototype.$sleep = time => {
+  return new Promise((resolve, reject) => {
+    window.setTimeout(() => {
+      resolve()
+    }, time)
+  })
+}
 new Vue({
   router,
   store,
