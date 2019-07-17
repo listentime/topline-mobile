@@ -9,8 +9,10 @@
                  :key="channelItem.id"
                  :title="channelItem.name">
           <!-- 下拉刷新组件 -->
-          <van-pull-refresh v-model="isLoading"
-                            @refresh="onRefresh">
+          <van-pull-refresh v-model="channelItem.pullLoading"
+                            @refresh="onRefresh"
+                            :success-text='channelItem.downPullSuccessText'
+                            :success-duration="1000">
             <!-- 上拉加载更多组件 -->
             <van-list v-model="channelItem.upLoading"
                       :finished="channelItem.upPullFinished"
@@ -78,6 +80,7 @@ export default {
         item.pullLoading = false // 控制当前频道的下拉刷新状态
         item.upLoading = false // 控制当前频道的上拉加载更多的状态
         item.upPullFinished = false // 控制当前频道是否加载完毕
+        item.downPullSuccessText = ''
       })
       this.channels = channel
     },
@@ -104,8 +107,24 @@ export default {
       this.activeChannel.upLoading = false
     },
     // 当下拉刷新的时候方法
-    onRefresh () {
-      console.log('下啦')
+    async onRefresh () {
+      // const timestamp = this.activeChannel.timestamp
+      this.activeChannel.timestamp = Date.now()
+      // this.activeChannel.timestamp = '1556789000001'
+      const data = await this.loadArticle()
+      console.log(data)
+      // 如果有数据就更新
+      if (data.results.length) {
+        this.activeChannel.articles = data.results
+        this.activeChannel.timestamp = data.pre_timestamp
+        this.activeChannel.downPullSuccessText = `更新了${data.results.length}条数据`
+        // 更新后数据有可能无法满足一屏
+        this.onLoad()
+      } else {
+        this.activeChannel.downPullSuccessText = '已经是最新'
+      }
+      this.activeChannel.pullLoading = false
+      // 如果没有就什么页不做
     },
     async loadArticle () {
       const { id: channelId, timestamp } = this.activeChannel
